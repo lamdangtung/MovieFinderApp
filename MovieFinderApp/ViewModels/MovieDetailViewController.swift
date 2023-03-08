@@ -8,10 +8,11 @@
 import UIKit
 
 class MovieDetailViewController: UIViewController {
-
+    var movieId:Int?
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        print(movieId)
         // Do any additional setup after loading the view.
     }
     

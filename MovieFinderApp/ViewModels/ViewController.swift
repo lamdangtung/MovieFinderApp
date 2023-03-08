@@ -10,6 +10,16 @@ import UIKit
 class ViewController: UIViewController, UICollectionViewDelegate,UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     
+    enum Cells{
+            static let popularCell = "popularCell"
+            static let upcomingCell = "upcomingCell"
+            
+        }
+        
+        enum Segues{
+            static let goToMovieDetail = "goToMovieDetail"
+        }
+    
     let gradientlayer = CAGradientLayer()
     let movieService:MovieServiceProtocol = MovieService()
     var movies:[Movie] = []
@@ -58,6 +68,11 @@ class ViewController: UIViewController, UICollectionViewDelegate,UICollectionVie
         searchTextField.setGradient(startColor: UIColor(hexString: "0xFF6B66A6", alpha: 0.3), endColor: UIColor(hexString: "0xFF75D1DD", alpha: 0.3))
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationViewModel = segue.destination as! MovieDetailViewController
+        destinationViewModel.movieId = sender as? Int
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if(collectionView == popularCollectionView){
             return popularData.count
@@ -69,12 +84,12 @@ class ViewController: UIViewController, UICollectionViewDelegate,UICollectionVie
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if(collectionView == popularCollectionView){
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "popularCell", for: indexPath) as! PopularCollectionViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cells.popularCell, for: indexPath) as! PopularCollectionViewCell
             cell.imageView.loadFrom(URLAddress: "https://image.tmdb.org/t/p/original/\(popularData[indexPath.row].backdropPath)")
             cell.layer.cornerRadius = 15
             return cell
         }else{
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "upcomingCell", for: indexPath) as! UpcomingCollectionViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cells.upcomingCell, for: indexPath) as! UpcomingCollectionViewCell
             cell.imageView.loadFrom(URLAddress: "https://image.tmdb.org/t/p/original/\(upcomingData[indexPath.row].backdropPath)")
             cell.layer.cornerRadius = 12
             return cell
@@ -90,9 +105,14 @@ class ViewController: UIViewController, UICollectionViewDelegate,UICollectionVie
         }
     }
     
-    @objc func gestureFired(_ gesture: UITapGestureRecognizer){
-        
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if(collectionView == popularCollectionView){
+            performSegue(withIdentifier: Segues.goToMovieDetail, sender: popularData[indexPath.row].id)
+        }else{
+            performSegue(withIdentifier: Segues.goToMovieDetail, sender: upcomingData[indexPath.row].id)
+        }
     }
+    
     
 }
 
